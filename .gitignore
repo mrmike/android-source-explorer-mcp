@@ -1,0 +1,64 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+bin/
+build/
+develop-eggs/
+dist/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Secrets & Local Config
+.env
+.env.local
+
+# Local source cache (default location)
+.android-sources/
+
+# LSP Workspace Data (highly recommended to ignore)
+**/java_data/
+**/kotlin_data/
+
+# Logs
+*.log
+logs/
+
+# Test/Debug scripts
+test_server.py
+explore_ast.py
+test_ts_basic.py
+explore_ast_manual.py
+fqcn_test.py
+explore_ast_manual.py
+test_ts_basic.py
+explore_ast.py
+test_server.py
