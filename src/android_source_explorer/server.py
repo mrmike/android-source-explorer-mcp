@@ -11,12 +11,8 @@ mcp = FastMCP(
     dependencies=["mcp[cli]", "tree-sitter", "tree-sitter-java", "tree-sitter-kotlin", "httpx"]
 )
 
-@mcp.on_shutdown()
-async def on_shutdown():
-    """Ensure LSP processes are cleaned up on server shutdown."""
-    if config.lsp_enabled:
-        from .lsp.lsp_manager import lsp_manager
-        await lsp_manager.shutdown()
+# Note: We've removed the on_shutdown decorator as it's not supported in this version of FastMCP.
+# LSP cleanup will be handled by the OS terminating the process group.
 
 def get_index() -> dict[str, str]:
     if not config.class_index_path.exists():
@@ -267,14 +263,7 @@ async def goto_definition(class_name: str, line: int, character: int) -> str:
     target_path = Path(uri.replace("file://", ""))
     target_range = result["range"]["start"]
     
-    # Use Tree-sitter to show context at target
-    try:
-        tree, src, lang = parse_file(target_path)
-        # Find the method or class at that position
-        # For now, just return the file and line
-        return f"Defined in {target_path} at line {target_range['line'] + 1}"
-    except Exception:
-        return f"Defined in {uri} at line {target_range['line'] + 1}"
+    return f"Defined in {target_path} at line {target_range['line'] + 1}"
 
 @mcp.tool()
 async def find_references(class_name: str, line: int, character: int) -> list[str]:
