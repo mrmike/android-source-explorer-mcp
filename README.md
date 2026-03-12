@@ -2,6 +2,10 @@
 
 MCP server for exploring AOSP internals and Jetpack libraries.
 
+<p align="center">
+  <img src="project-logo.png" width="600" alt="Android Source Explorer Logo">
+</p>
+
 ## Purpose
 
 When building Android applications, AI tools often rely on outdated training data or incomplete summaries of the Android Framework. This MCP server provides **on-demand, precise access to the actual source code** (AOSP and AndroidX), enabling the AI to understand complex framework internals like the `Activity` lifecycle, `ViewModel` restoration, or `Compose` internals directly from the truth.
