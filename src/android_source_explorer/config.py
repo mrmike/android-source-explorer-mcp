@@ -1,16 +1,39 @@
 import os
+import re
 from pathlib import Path
 from dataclasses import dataclass
 
-DEFAULT_API_LEVEL = "36"
+DEFAULT_FALLBACK_API = "36"
 ANDROID_SOURCE_DIR = Path(os.environ.get("ANDROID_SOURCE_DIR", Path.home() / ".android-sources"))
 
 @dataclass
 class Config:
     source_dir: Path = ANDROID_SOURCE_DIR
-    api_level: str = os.environ.get("ANDROID_SOURCE_API_LEVEL", DEFAULT_API_LEVEL)
     android_home: Path | None = Path(os.environ["ANDROID_HOME"]) if "ANDROID_HOME" in os.environ else None
     
+    @property
+    def api_level(self) -> str:
+        """Dynamically detect the API level based on synced folders or env var."""
+        # 1. Respect explicit environment variable if set
+        env_val = os.environ.get("ANDROID_SOURCE_API_LEVEL")
+        if env_val:
+            return env_val
+            
+        # 2. Try to detect the highest synced API level folder
+        if self.framework_dir.exists():
+            api_folders = []
+            for item in self.framework_dir.iterdir():
+                if item.is_dir() and item.name.startswith("android-"):
+                    match = re.search(r"android-(\d+)", item.name)
+                    if match:
+                        api_folders.append(int(match.group(1)))
+            
+            if api_folders:
+                return str(max(api_folders))
+                
+        # 3. Fallback to the latest stable constant
+        return DEFAULT_FALLBACK_API
+
     @property
     def framework_dir(self) -> Path:
         return self.source_dir / "framework"
