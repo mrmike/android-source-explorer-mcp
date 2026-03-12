@@ -102,6 +102,19 @@ def status():
             console.print("[bold red]✗ Failed to read index.[/bold red]")
     else:
         console.print("[yellow]✗ Index not built yet. Run 'sync' or 'index'.[/yellow]")
+
+@main.command(name="list-androidx")
+def list_androidx():
+    """List all available AndroidX artifact groups from Google Maven."""
+    from .sync.artifact_catalog import get_all_androidx_groups
+    console.print("[bold blue]Fetching available AndroidX groups...[/bold blue]")
+    groups = get_all_androidx_groups()
+    if groups:
+        for g in groups:
+            console.print(f"  {g}")
+        console.print(f"\n[bold green]Total: {len(groups)} artifact groups found.[/bold green]")
+    else:
+        console.print("[red]No AndroidX groups found.[/red]")
     
 if __name__ == '__main__':
     main()

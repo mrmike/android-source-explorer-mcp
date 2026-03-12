@@ -26,6 +26,25 @@ def get_artifacts_in_group(group: str) -> dict[str, list[str]]:
         console.print(f"[yellow]Failed to fetch index for {group} - {e}[/yellow]")
         return {}
 
+def get_all_androidx_groups() -> list[str]:
+    """Fetch all groups starting with 'androidx' from the master index."""
+    url = f"{MAVEN_GOOGLE_URL}/master-index.xml"
+    try:
+        response = httpx.get(url, timeout=10.0)
+        if response.status_code != 200:
+            return []
+            
+        root = ET.fromstring(response.text)
+        groups = []
+        for child in root:
+            group_name = child.tag.replace("_", ".")
+            if group_name.startswith("androidx"):
+                groups.append(group_name)
+        return sorted(groups)
+    except Exception as e:
+        console.print(f"[red]Failed to fetch master index: {e}[/red]")
+        return []
+
 def get_latest_stable_version(versions: list[str]) -> str | None:
     """Filter out alpha/beta/rc and return the latest stable version."""
     stables = [v for v in versions if "-" not in v]
