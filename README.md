@@ -1,6 +1,6 @@
 # Android Source Explorer MCP Server
 
-Accurate Android Framework and AndroidX source code explorer for AI agents.
+The source explorer for AOSP internals and the Jetpack libraries.
 
 ## Purpose
 
