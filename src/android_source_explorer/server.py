@@ -130,10 +130,17 @@ def search_in_source(pattern: str, class_name: str = None, limit: int = 20) -> l
         return [str(e)]
         
     results = []
+    # Try literal search first if it's not a valid regex or looks like a literal
+    is_regex = any(c in pattern for c in "*+?^$[]{}|")
+    
     try:
-        regex = re.compile(pattern, re.IGNORECASE)
-    except re.error as e:
-        return [f"Invalid regex pattern: {e}"]
+        if not is_regex:
+            regex = re.compile(re.escape(pattern), re.IGNORECASE)
+        else:
+            regex = re.compile(pattern, re.IGNORECASE)
+    except re.error:
+        # Fallback to escaped literal if regex fails
+        regex = re.compile(re.escape(pattern), re.IGNORECASE)
     
     files_to_search = []
     if class_name:
