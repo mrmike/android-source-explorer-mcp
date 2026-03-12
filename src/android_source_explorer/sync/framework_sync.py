@@ -62,13 +62,15 @@ def sync_framework_sources(api_level: str, dest_dir: Path):
         console.print(f"[yellow]Framework sources for API {api_level} already exist. Skipping clone.[/yellow]")
         return target_dir
 
-    with console.status(f"[bold blue]Fetching framework sources for API {api_level} (tag: {tag})...") as status:
+    with console.status(f"[bold blue]Fetching Framework API {api_level} ({tag})...") as status:
+        # We use a temporary directory for cloning
         temp_dir = dest_dir / f"android-{api_level}_tmp"
         if temp_dir.exists():
             shutil.rmtree(temp_dir)
             
         try:
-            status.update("[dim]Initializing local git repository...[/dim]")
+            # Initialize an empty repository
+            status.update("[dim]Initializing local repository...[/dim]")
             subprocess.run(["git", "init", str(temp_dir)], check=True, capture_output=True)
             subprocess.run(["git", "-C", str(temp_dir), "remote", "add", "origin", repo_url], check=True, capture_output=True)
             subprocess.run(["git", "-C", str(temp_dir), "config", "core.sparseCheckout", "true"], check=True, capture_output=True)
@@ -79,23 +81,23 @@ def sync_framework_sources(api_level: str, dest_dir: Path):
                 for path in sparse_paths:
                     f.write(path + "\n")
                     
-            status.update(f"[blue]Downloading {tag} from AOSP...[/blue]")
-            # Fetch specific tag
-            result = subprocess.run(
+            status.update(f"[blue]Downloading {tag} from AOSP (this may take a few minutes)...[/blue]")
+            # Fetch using the specific tag reference
+            subprocess.run(
                 ["git", "-C", str(temp_dir), "fetch", "--depth", "1", "origin", f"refs/tags/{tag}:refs/tags/{tag}"], 
-                capture_output=True, text=True
+                check=True, capture_output=True
             )
-            
-            if result.returncode != 0:
-                raise RuntimeError(f"Git fetch failed: {result.stderr}")
             
             status.update("[dim]Checking out files...[/dim]")
             subprocess.run(["git", "-C", str(temp_dir), "checkout", tag], check=True, capture_output=True)
             
+            # Remove .git folder
             shutil.rmtree(temp_dir / ".git")
+            
+            # Rename tmp to final
             temp_dir.rename(target_dir)
             
-            console.print(f"[bold green]✓ Framework API {api_level} synced (revision {tag.split('_')[-1]}).[/bold green]")
+            console.print(f"[bold green]✓ Framework API {api_level} synced.[/bold green]")
             return target_dir
             
         except Exception as e:

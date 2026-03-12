@@ -3,7 +3,7 @@ import zipfile
 import io
 from pathlib import Path
 from rich.console import Console
-from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskProgressColumn
+from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskProgressColumn, MofNCompleteColumn
 from .artifact_catalog import get_artifacts_in_group, get_latest_stable_version
 
 console = Console()
@@ -48,12 +48,15 @@ def sync_androidx(groups_arg: str, dest_dir: Path):
     
     with Progress(
         SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-        BarColumn(),
+        # Use fixed width for the description to prevent jumping
+        TextColumn("[progress.description]{task.description: <40}"),
+        BarColumn(bar_width=40),
+        MofNCompleteColumn(),
         TaskProgressColumn(),
-        console=console
+        console=console,
+        expand=False
     ) as progress:
-        group_task = progress.add_task("[blue]Fetching group indexes...", total=len(targets))
+        group_task = progress.add_task("[blue]Fetching indexes...", total=len(targets))
         
         all_artifacts = []
         for group in targets:
@@ -65,9 +68,10 @@ def sync_androidx(groups_arg: str, dest_dir: Path):
                         all_artifacts.append((group, artifact, version))
             progress.advance(group_task)
             
-        download_task = progress.add_task("[green]Downloading sources...", total=len(all_artifacts))
+        download_task = progress.add_task("[green]Syncing artifacts...", total=len(all_artifacts))
         for group, artifact, version in all_artifacts:
-            progress.update(download_task, description=f"[green]Downloading {artifact}...")
+            # Update description with fixed-width name
+            progress.update(download_task, description=f"[green]Syncing {artifact}")
             download_artifact_sources(group, artifact, version, dest_dir)
             progress.advance(download_task)
 
