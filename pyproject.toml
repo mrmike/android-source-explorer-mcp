@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "android-source-explorer"
 version = "0.1.0"
-description = "The source explorer for AOSP internals and the Jetpack libraries"
+description = "MCP server for exploring AOSP internals and Jetpack libraries"
 license = "Apache-2.0"
 readme = "README.md"
 requires-python = ">=3.11"

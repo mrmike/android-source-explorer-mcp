@@ -1,6 +1,6 @@
 # Android Source Explorer MCP Server
 
-The source explorer for AOSP internals and the Jetpack libraries.
+MCP server for exploring AOSP internals and Jetpack libraries.
 
 ## Purpose
 
