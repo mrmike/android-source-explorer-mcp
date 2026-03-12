@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from dataclasses import dataclass
 
-DEFAULT_API_LEVEL = "35"
+DEFAULT_API_LEVEL = "36"
 ANDROID_SOURCE_DIR = Path(os.environ.get("ANDROID_SOURCE_DIR", Path.home() / ".android-sources"))
 
 @dataclass
