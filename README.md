@@ -24,8 +24,8 @@ When building Android applications, AI tools often rely on outdated training dat
 
 2. Install dependencies and perform an initial sync:
    ```bash
-   # Sync API 35 (Android 15) and common AndroidX packages
-   uv run android-source-explorer sync --api-level 35 --androidx "compose,lifecycle,activity"
+   # Sync API 36 (Android 16) and common AndroidX packages
+   uv run android-source-explorer sync --api-level 36 --androidx "compose,lifecycle,activity"
    
    # (Optional) Download LSP servers for cross-file features
    uv run android-source-explorer sync --lsp
