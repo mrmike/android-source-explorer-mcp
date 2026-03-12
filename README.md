@@ -36,17 +36,20 @@ When building Android applications, AI tools often rely on outdated training dat
    uv run android-source-explorer status
    ```
 
-   ## Startup
+---
 
-   The project provides a unified CLI. To start the MCP server for an AI client, use the `serve` command:
+## Startup
 
-   ```bash
-   uv run android-source-explorer serve
-   ```
+The project provides a unified CLI. To start the MCP server for an AI client, use the `serve` command:
 
-   ---
+```bash
+uv run android-source-explorer serve
+```
 
-   ## Configuration
+---
+
+## Configuration
+
 Add the server to your MCP client (e.g., Claude Desktop, Cursor, Gemini CLI).
 
 ### Basic Configuration
