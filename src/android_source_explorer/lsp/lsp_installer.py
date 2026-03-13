@@ -10,7 +10,7 @@ from rich.console import Console
 console = Console()
 
 KOTLIN_LS_URL = "https://github.com/fwcd/kotlin-language-server/releases/latest/download/server.zip"
-JDT_LS_URL = "https://download.eclipse.org/jdtls/milestones/1.40.0/jdt-language-server-1.40.0-202410241517.tar.gz"
+JDT_LS_URL = "https://download.eclipse.org/jdtls/milestones/1.57.0/jdt-language-server-1.57.0-202602261110.tar.gz"
 
 def install_lsp_servers(lsp_dir: Path):
     """Download and extract Kotlin and Java LSP servers."""
