@@ -24,7 +24,7 @@ When building Android applications, AI tools often rely on outdated training dat
 You can install `android-source-explorer` directly using Homebrew:
 
 ```bash
-brew tap mrmike/android-source-explorer-mcp
+brew tap mrmike/android-source-explorer-mcp https://github.com/mrmike/android-source-explorer-mcp
 brew install android-source-explorer
 ```
 
