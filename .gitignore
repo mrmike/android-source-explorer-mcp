@@ -62,3 +62,4 @@ explore_ast_manual.py
 test_ts_basic.py
 explore_ast.py
 test_server.py
+\n# Gemini CLI data\n.gemini/
