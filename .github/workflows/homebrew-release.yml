@@ -18,35 +18,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Install uv
-        run: curl -LsSf https://astral.sh/uv/install.sh | sh
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install .
-
-      - name: Generate resources
-        id: resources
-        run: |
-          echo "Generating resources for android-source-explorer from uv.lock..."
-          RESOURCES=$(python scripts/generate_homebrew_resources.py)
-          
-          if [ -z "$RESOURCES" ]; then
-            echo "Error: No resources generated. Check scripts/generate_homebrew_resources.py"
-            exit 1
-          fi
-          
-          # Store resources in environment for later use
-          echo "RESOURCES<<EOF" >> $GITHUB_ENV
-          echo "$RESOURCES" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-
       - name: Get tag info
         id: tag
         run: |
@@ -69,24 +40,16 @@ jobs:
           SHA256="${{ steps.tag.outputs.SHA256 }}"
           HOMEPAGE="https://github.com/${{ github.repository }}"
           
-          # Replace version, url, and sha256
+          # Replace homepage, url, and sha256
+          # Using different delimiters for sed to avoid escaping issues with URLs
+          sed -i "s|homepage \".*\"|homepage \"$HOMEPAGE\"|" $FORMULA_PATH
           sed -i "s|url \".*\"|url \"$URL\"|" $FORMULA_PATH
           sed -i "s|sha256 \".*\"|sha256 \"$SHA256\"|" $FORMULA_PATH
-          sed -i "s|homepage \".*\"|homepage \"$HOMEPAGE\"|" $FORMULA_PATH
-          
-          # Replace resource blocks between markers
-          # Delete everything between [RESOURCES_START] and [RESOURCES_END]
-          sed -i '/\[RESOURCES_START\]/,/\[RESOURCES_END\]/ { /\[RESOURCES_START\]/! { /\[RESOURCES_END\]/! d } }' $FORMULA_PATH
-          
-          # Insert new resources after [RESOURCES_START]
-          echo "$RESOURCES" > resources.tmp
-          sed -i '/\[RESOURCES_START\]/r resources.tmp' $FORMULA_PATH
-          rm resources.tmp
 
       - name: Commit and push changes
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add Formula/android-source-explorer.rb
-          git commit -m "Update Homebrew formula for version ${{ steps.tag.outputs.VERSION }}"
+          git commit -m "chore: update Homebrew formula for version ${{ steps.tag.outputs.VERSION }}"
           git push origin HEAD:main
