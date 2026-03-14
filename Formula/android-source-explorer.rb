@@ -2,7 +2,7 @@ class AndroidSourceExplorer < Formula
   desc "MCP server for exploring AOSP internals and Jetpack libraries"
   homepage "https://github.com/mrmike/android-source-explorer-mcp"
   url "https://github.com/mrmike/android-source-explorer-mcp/archive/refs/tags/v0.1.0.tar.gz"
-  sha256 "0e7ab0d1121dc745d843920a6dbc0673882b157213a0b6765890765062f5427a"
+  sha256 "4aaabf4d664ea56174e41f070e4c4a544f49539369e134c0d88db1451d509860"
   license "Apache-2.0"
 
   depends_on "python@3.12"
