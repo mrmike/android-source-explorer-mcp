@@ -81,4 +81,4 @@ jobs:
           git config --local user.name "GitHub Action"
           git add Formula/android-source-explorer.rb
           git commit -m "Update Homebrew formula for version ${{ steps.tag.outputs.VERSION }}"
-          git push origin HEAD:${{ github.ref_name }}
+          git push origin HEAD:main
