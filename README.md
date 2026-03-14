@@ -49,41 +49,62 @@ brew install android-source-explorer
    uv run android-source-explorer status
    ```
 
----
-
 ## Startup
 
-The project provides a unified CLI. To start the MCP server for an AI client, use the `serve` command:
+Start the MCP server for an AI client (e.g., Claude Desktop, Cursor, Gemini CLI) by adding it to your configuration file.
 
-```bash
-uv run android-source-explorer serve
-```
+### Option 1: Homebrew (Recommended)
+If installed via `brew install android-source-explorer`, the tool is available globally.
 
----
-
-## Configuration
-
-Add the server to your MCP client (e.g., Claude Desktop, Cursor, Gemini CLI).
-
-### Basic Configuration
+**Basic Setup:**
 ```json
 {
   "mcpServers": {
     "android-sources": {
-      "command": "uv",
-      "args": ["run", "--directory", "/path/to/android-source-explorer", "android-source-explorer", "serve"]
+      "command": "android-source-explorer",
+      "args": ["serve"]
     }
   }
 }
 ```
 
-### With LSP Features Enabled
+**With LSP Features Enabled:**
+```json
+{
+  "mcpServers": {
+    "android-sources": {
+      "command": "android-source-explorer",
+      "args": ["serve"],
+      "env": {
+        "ANDROID_SOURCE_LSP": "true"
+      }
+    }
+  }
+}
+```
+
+### Option 2: Manual Setup (uv)
+If you cloned the repository and want to run it without a global installation.
+
+**Basic Setup:**
 ```json
 {
   "mcpServers": {
     "android-sources": {
       "command": "uv",
-      "args": ["run", "--directory", "/path/to/android-source-explorer", "android-source-explorer", "serve"],
+      "args": ["run", "--directory", "/absolute/path/to/android-source-explorer", "android-source-explorer", "serve"]
+    }
+  }
+}
+```
+
+**With LSP Features Enabled:**
+```json
+{
+  "mcpServers": {
+    "android-sources": {
+      "command": "uv",
+      "args": ["run", "--directory", "/absolute/path/to/android-source-explorer", "android-source-explorer", "serve"],
       "env": {
         "ANDROID_SOURCE_LSP": "true"
       }
