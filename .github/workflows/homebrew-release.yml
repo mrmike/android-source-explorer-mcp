@@ -1,0 +1,84 @@
+name: Update Homebrew Formula
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  update-formula:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Install dependencies and poet
+        run: |
+          uv pip install . homebrew-pypi-poet --system
+
+      - name: Generate resources
+        id: resources
+        run: |
+          # Generate resource blocks for dependencies
+          # poet uses the package name to find dependencies in the current env
+          RESOURCES=$(poet -f android-source-explorer | sed -n '/resource/,$p')
+          
+          # Clean up the output to only get the resource blocks
+          echo "RESOURCES<<EOF" >> $GITHUB_ENV
+          echo "$RESOURCES" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Get tag info
+        id: tag
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          URL="https://github.com/${{ github.repository }}/archive/refs/tags/${GITHUB_REF#refs/tags/}.tar.gz"
+          
+          # Download the source tarball to calculate sha256
+          curl -L $URL -o source.tar.gz
+          SHA256=$(sha256sum source.tar.gz | awk '{ print $1 }')
+          
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "URL=$URL" >> $GITHUB_OUTPUT
+          echo "SHA256=$SHA256" >> $GITHUB_OUTPUT
+
+      - name: Update Formula
+        run: |
+          FORMULA_PATH="Formula/android-source-explorer.rb"
+          VERSION="${{ steps.tag.outputs.VERSION }}"
+          URL="${{ steps.tag.outputs.URL }}"
+          SHA256="${{ steps.tag.outputs.SHA256 }}"
+          HOMEPAGE="https://github.com/${{ github.repository }}"
+          
+          # Replace version, url, and sha256
+          sed -i "s|url \".*\"|url \"$URL\"|" $FORMULA_PATH
+          sed -i "s|sha256 \".*\"|sha256 \"$SHA256\"|" $FORMULA_PATH
+          sed -i "s|homepage \".*\"|homepage \"$HOMEPAGE\"|" $FORMULA_PATH
+          
+          # Replace resource blocks between markers
+          # Delete everything between [RESOURCES_START] and [RESOURCES_END]
+          sed -i '/\[RESOURCES_START\]/,/\[RESOURCES_END\]/ { /\[RESOURCES_START\]/! { /\[RESOURCES_END\]/! d } }' $FORMULA_PATH
+          
+          # Insert new resources after [RESOURCES_START]
+          echo "$RESOURCES" > resources.tmp
+          sed -i '/\[RESOURCES_START\]/r resources.tmp' $FORMULA_PATH
+          rm resources.tmp
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add Formula/android-source-explorer.rb
+          git commit -m "Update Homebrew formula for version ${{ steps.tag.outputs.VERSION }}"
+          git push origin HEAD:${{ github.ref_name }}

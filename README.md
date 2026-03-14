@@ -16,10 +16,19 @@ When building Android applications, AI tools often rely on outdated training dat
 
 ### Prerequisites
 - Python 3.11+
-- `uv` (recommended) or `pip`
 - Git
 
-### Initial Setup
+### Installation Options
+
+#### 1. Homebrew (Recommended for macOS/Linux)
+You can install `android-source-explorer` directly using Homebrew:
+
+```bash
+brew tap mrmike/android-source-explorer-mcp
+brew install android-source-explorer
+```
+
+#### 2. Manual Setup with uv
 1. Clone the repository:
    ```bash
    git clone <repo-url> android-source-explorer
