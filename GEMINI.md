@@ -1,1 +1,2 @@
-# Project Rules\n\n- NEVER push changes to the remote repository without explicit user permission.
+# Project Rules
+1. Never push changes to the remote repository without explicit user permission.
