@@ -15,46 +15,44 @@ When building Android applications, AI tools often rely on outdated training dat
 ## Installation & Setup
 
 ### Prerequisites
-- Python 3.11+
+- [uv](https://github.com/astral-sh/uv) (Recommended) or Python 3.11+
 - Git
 
-### Installation Options
+### Recommended Installation (via uv)
 
-#### 1. Homebrew (still experimental)
-You can install `android-source-explorer` directly using Homebrew:
+The easiest way to install and keep `android-source-explorer` up to date is using `uv`. It handles dependencies (including native ones like Tree-sitter and Cryptography) reliably across platforms.
 
 ```bash
-brew tap mrmike/android-source-explorer-mcp https://github.com/mrmike/android-source-explorer-mcp
-brew install android-source-explorer
+uv tool install git+https://github.com/mrmike/android-source-explorer-mcp
 ```
 
-#### 2. Manual Setup with uv
-1. Clone the repository:
-   ```bash
-   git clone <repo-url> android-source-explorer
-   cd android-source-explorer
-   ```
+This will make the `android-source-explorer` command available globally in your PATH.
 
-2. Install dependencies and perform an initial sync:
-   ```bash
-   # Sync API 36 (Android 16) and common AndroidX packages
-   uv run android-source-explorer sync --api-level 36 --androidx "compose,lifecycle,activity"
-   
-   # (Optional) Download LSP servers for cross-file features
-   uv run android-source-explorer sync --lsp
-   ```
+### Initial Sync
 
-3. Check sync status:
-   ```bash
-   uv run android-source-explorer status
-   ```
+After installation, you need to perform an initial sync to fetch the Android source code:
 
-## Startup
+```bash
+# Sync API 36 (Android 16) and common AndroidX packages
+android-source-explorer sync --api-level 36 --androidx "compose,lifecycle,activity"
 
-Start the MCP server for an AI client (e.g., Claude Desktop, Cursor, Gemini CLI) by adding it to your configuration file.
+# (Optional) Download LSP servers for cross-file features
+android-source-explorer sync --lsp
+```
 
-### Option 1: Homebrew (Recommended)
-If installed via `brew install android-source-explorer`, the tool is available globally.
+Check sync status:
+```bash
+android-source-explorer status
+```
+
+---
+
+## Configuration
+
+Add the MCP server to your configuration file (e.g., Claude Desktop, Cursor, Gemini CLI).
+
+### Global Usage (Recommended)
+If installed via `uv tool install`, the tool is available globally.
 
 **Basic Setup:**
 ```json
@@ -83,31 +81,15 @@ If installed via `brew install android-source-explorer`, the tool is available g
 }
 ```
 
-### Option 2: Manual Setup (uv)
-If you cloned the repository and want to run it without a global installation.
+### Development Usage
+If you cloned the repository and want to run it from the source:
 
-**Basic Setup:**
 ```json
 {
   "mcpServers": {
     "android-sources": {
       "command": "uv",
       "args": ["run", "--directory", "/absolute/path/to/android-source-explorer", "android-source-explorer", "serve"]
-    }
-  }
-}
-```
-
-**With LSP Features Enabled:**
-```json
-{
-  "mcpServers": {
-    "android-sources": {
-      "command": "uv",
-      "args": ["run", "--directory", "/absolute/path/to/android-source-explorer", "android-source-explorer", "serve"],
-      "env": {
-        "ANDROID_SOURCE_LSP": "true"
-      }
     }
   }
 }
