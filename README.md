@@ -20,7 +20,7 @@ When building Android applications, AI tools often rely on outdated training dat
 
 ### Installation Options
 
-#### 1. Homebrew (Recommended for macOS/Linux)
+#### 1. Homebrew (still experimental)
 You can install `android-source-explorer` directly using Homebrew:
 
 ```bash
