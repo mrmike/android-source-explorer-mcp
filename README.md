@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/mrmike-android-source-explorer-mcp-badge.png)](https://mseep.ai/app/mrmike-android-source-explorer-mcp)
+
 # Android Source Explorer MCP Server
 
 MCP server for exploring AOSP internals and Jetpack libraries.
