@@ -45,6 +45,22 @@ Check sync status:
 android-source-explorer status
 ```
 
+### Keeping Sources Up-to-Date
+
+To check for and download the latest available Android Framework revisions (AOSP tags) and newer stable versions of your synced AndroidX packages, run:
+
+```bash
+# Update all synced framework APIs and AndroidX packages, then rebuild the index
+android-source-explorer update
+
+# (Optional) Clean up older versions of updated AndroidX packages
+android-source-explorer update --clean
+
+# Update only a specific API level or AndroidX package
+android-source-explorer update --api-level 36
+android-source-explorer update --androidx activity-compose
+```
+
 ---
 
 ## Configuration
@@ -105,10 +121,11 @@ The server uses a **dual-engine approach** to balance speed and intelligence:
 - **LSP (Global Engine):** Optionally leverages the **Eclipse JDT LS** (Java) and **Kotlin Language Server** for cross-file navigation. This enables finding references across millions of lines of code and resolving types that span multiple libraries.
 
 ### 2. Local Sync Strategy
-To ensure all lookups are instant and offline-ready, the server uses a `sync` command to pre-fetch sources into a local cache (`~/.android-sources/`):
+To ensure all lookups are instant and offline-ready, the server uses a `sync` or `update` command to manage sources in a local cache (`~/.android-sources/`):
 - **AOSP:** Fetches framework sources directly from `android.googlesource.com` using git sparse-checkouts.
 - **AndroidX:** Downloads `-sources.jar` files from the Google Maven repository (`dl.google.com/dl/android/maven2/`).
 - **Hybrid Indexing:** Prioritizes your local `$ANDROID_HOME` sources if available, supplemented by the downloaded cache.
+- **Automatic Updates:** The `update` command queries remote endpoints (AOSP Git tags & Google Maven indexes) for updates, downloads newer revisions/versions, and rebuilds the class index.
 
 ---
 

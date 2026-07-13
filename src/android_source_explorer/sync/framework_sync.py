@@ -1,6 +1,8 @@
 import subprocess
 import shutil
 import re
+import json
+import datetime
 from pathlib import Path
 from rich.console import Console
 
@@ -52,15 +54,28 @@ def find_latest_tag(api_level: str) -> str:
     # Fallback to r1 if discovery fails
     return f"android-{version_prefix}_r1"
 
-def sync_framework_sources(api_level: str, dest_dir: Path):
+def sync_framework_sources(api_level: str, dest_dir: Path, force: bool = False):
     """Clone Android framework sources using git sparse-checkout."""
     tag = find_latest_tag(api_level)
     repo_url = "https://android.googlesource.com/platform/frameworks/base"
     
     target_dir = dest_dir / f"android-{api_level}"
-    if target_dir.exists():
+    metadata_path = target_dir / ".metadata.json"
+    
+    if target_dir.exists() and not force:
         console.print(f"[yellow]Framework sources for API {api_level} already exist. Skipping clone.[/yellow]")
         return target_dir
+
+    if target_dir.exists() and force:
+        if metadata_path.exists():
+            try:
+                with open(metadata_path, "r") as f:
+                    meta = json.load(f)
+                if meta.get("tag") == tag:
+                    console.print(f"[green]Framework sources for API {api_level} are already up to date ({tag}).[/green]")
+                    return target_dir
+            except Exception:
+                pass
 
     with console.status(f"[bold blue]Fetching Framework API {api_level} ({tag})...") as status:
         # We use a temporary directory for cloning
@@ -94,7 +109,18 @@ def sync_framework_sources(api_level: str, dest_dir: Path):
             # Remove .git folder
             shutil.rmtree(temp_dir / ".git")
             
+            # Write metadata
+            metadata = {
+                "api_level": api_level,
+                "tag": tag,
+                "last_updated": datetime.datetime.now().isoformat()
+            }
+            with open(temp_dir / ".metadata.json", "w") as f:
+                json.dump(metadata, f, indent=2)
+            
             # Rename tmp to final
+            if target_dir.exists():
+                shutil.rmtree(target_dir)
             temp_dir.rename(target_dir)
             
             console.print(f"[bold green]✓ Framework API {api_level} synced.[/bold green]")
